@@ -156,3 +156,18 @@ export const getStandings = async (seasonId: number): Promise<Standing[]> => {
 
   return data || [];
 };
+
+// Get standings with team name by season
+export const getStandingsWithTeam = async (seasonId: number) => {
+  const { data, error } = await supabase
+    .from('standings')
+    .select(`*, team:team_id (team_id, team_name)`)
+    .eq('season_id', seasonId)
+    .order('position', { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to fetch standings with team: ${error.message}`);
+  }
+
+  return data || [];
+};
