@@ -7,7 +7,7 @@ import { MatchCard } from '@/features/matches/components/MatchCard';
 import SeasonSummary from '@/features/matches/components/SeasonSummary';
 import StandingsTable from '@/features/stats/components/StandingsTable';
 import { useGoalQuery } from '@/hooks/useGoalQuery';
-import { MatchWithTeams } from '@/lib/types';
+import { MatchModel } from '@/generated/types';
 
 interface Season2ResultsProps {
   className?: string;
@@ -23,7 +23,7 @@ const Season2Results: React.FC<Season2ResultsProps> = ({ className }) => {
     [3] // 시즌 2는 season_id = 3
   );
 
-  const getMatchGroup = (match: MatchWithTeams) => {
+  const getMatchGroup = (match: MatchModel) => {
     const description = match.description || '';
 
     // description에서 그룹 정보 추출
@@ -114,10 +114,13 @@ const Season2Results: React.FC<Season2ResultsProps> = ({ className }) => {
                   if (!groups[group]) {
                     groups[group] = [];
                   }
-                  groups[group].push(match);
+                  // home_team과 away_team이 모두 존재하는 경우만 추가
+                  if (match.home_team && match.away_team) {
+                    groups[group].push(match);
+                  }
                   return groups;
                 },
-                {} as Record<string, MatchWithTeams[]>
+                {} as Record<string, MatchModel[]>
               )
             )
               .sort(([a], [b]) => {

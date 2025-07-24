@@ -54,11 +54,11 @@ export async function GET(
       orderBy: {
         goal_time: 'asc',
       },
-    })) as GoalWithPlayer[];
+    }))
 
     // Get team information for each goal
     const goalsWithTeam = await Promise.all(
-      goals.map(async (goal: GoalWithPlayer): Promise<GoalWithTeam> => {
+      goals.map(async (goal: GoalWithPlayer) => {
         const playerStats = await prisma.playerMatchStats.findFirst({
           where: {
             match_id: matchId,

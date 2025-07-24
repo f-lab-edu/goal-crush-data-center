@@ -1,3 +1,4 @@
+import { MatchModel } from '@/generated/types';
 import {
   Goal,
   MatchWithTeams,
@@ -72,7 +73,7 @@ export const getMatchByIdPrisma = async (
 // Get matches by season ID
 export const getMatchesBySeasonIdPrisma = async (
   seasonId: number
-): Promise<MatchWithTeams[]> => {
+): Promise<MatchModel[]> => {
   const response = await fetch(`/api/matches/season/${seasonId}`);
   if (!response.ok) {
     throw new Error(
@@ -176,18 +177,16 @@ export const getSeasonSummaryBySeasonIdPrisma = async (
 // ============== Legacy Functions for Backward Compatibility ==============
 
 // Pilot Season Matches
-export const getPilotSeasonMatchesPrisma = async (): Promise<
-  MatchWithTeams[]
-> => {
+export const getPilotSeasonMatchesPrisma = async () => {
   return getMatchesBySeasonIdPrisma(3);
 };
 
 // Season 1 Matches
-export const getSeason1MatchesPrisma = async (): Promise<MatchWithTeams[]> => {
+export const getSeason1MatchesPrisma = async () => {
   return getMatchesBySeasonIdPrisma(4);
 };
 
 // Season 2 Matches
-export const getSeason2MatchesPrisma = async (): Promise<MatchWithTeams[]> => {
+export const getSeason2MatchesPrisma = async () => {
   return getMatchesBySeasonIdPrisma(5);
 };
