@@ -333,7 +333,7 @@ function TeamLineupsSectionInner({
                                 variant="secondary"
                                 className="text-xs px-1.5 py-0.5 bg-orange-100 text-orange-800"
                               >
-                                🔴 {player.own_goals}
+                                🤦‍♀️ {player.own_goals}
                               </Badge>
                             )}
                             {!!player.assists && player.assists > 0 && (
@@ -610,7 +610,7 @@ function TeamLineupsSectionInner({
                                 variant="secondary"
                                 className="text-xs px-1.5 py-0.5 bg-orange-100 text-orange-800"
                               >
-                                🔴 {player.own_goals}
+                                🤦‍♀️ {player.own_goals}
                               </Badge>
                             )}
                             {!!player.assists && player.assists > 0 && (
