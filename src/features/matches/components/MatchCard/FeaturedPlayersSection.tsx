@@ -6,10 +6,12 @@ import React, { useMemo } from 'react';
 
 import { Badge, Card } from '@/components/ui';
 import { useGoalSuspenseQuery } from '@/hooks/useGoalQuery';
+import type { Goal } from '@/lib/types';
 import { MatchWithTeams } from '@/lib/types/database';
 
 import {
   getKeyPlayersByMatchIdPrisma,
+  getMatchGoalsPrisma,
   getMatchLineupsPrisma,
 } from '../../api-prisma';
 
@@ -61,6 +63,10 @@ export default function FeaturedPlayersSection({ match }: Props) {
     match.match_id,
   ]);
 
+  const { data: goals = [] } = useGoalSuspenseQuery(getMatchGoalsPrisma, [
+    match.match_id,
+  ]);
+
   const homeKey = `${match.match_id}_${match.home_team_id}`;
   const awayKey = `${match.match_id}_${match.away_team_id}`;
 
@@ -78,6 +84,20 @@ export default function FeaturedPlayersSection({ match }: Props) {
       );
     });
   };
+
+  // Calculate own goals per player
+  const ownGoalsByPlayer = useMemo(() => {
+    return goals.reduce(
+      (acc: Record<number, number>, goal: Goal) => {
+        if (goal.goal_type === 'own_goal') {
+          const playerId = goal.player_id;
+          acc[playerId] = (acc[playerId] || 0) + 1;
+        }
+        return acc;
+      },
+      {} as Record<number, number>
+    );
+  }, [goals]);
 
   const [homePick, awayPick] = useMemo(() => {
     if (isScheduled) {
@@ -108,7 +128,11 @@ export default function FeaturedPlayersSection({ match }: Props) {
     ): SelectedPlayer | null => {
       if (!Array.isArray(arr) || arr.length === 0) return null;
 
-      const getGoals = (x: LineupRow): number => x.goals ?? 0;
+      const getGoals = (x: LineupRow): number => {
+        const totalGoals = x.goals ?? 0;
+        const ownGoals = ownGoalsByPlayer[x.player_id] ?? 0;
+        return Math.max(0, totalGoals - ownGoals);
+      };
       const getAssists = (x: LineupRow): number => x.assists ?? 0;
       const getMinutes = (x: LineupRow): number => x.minutes_played ?? 0;
 
@@ -183,6 +207,7 @@ export default function FeaturedPlayersSection({ match }: Props) {
     awayKey,
     match.away_score,
     match.home_score,
+    ownGoalsByPlayer,
   ]);
 
   if (!homePick && !awayPick) return null;
