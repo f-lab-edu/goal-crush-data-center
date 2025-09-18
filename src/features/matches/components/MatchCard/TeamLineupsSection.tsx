@@ -158,10 +158,9 @@ function TeamLineupsSectionInner({
   );
 
   // Fetch goal data via Suspense Query
-  const { data: goals = [] } = useGoalSuspenseQuery(
-    getMatchGoalsPrisma,
-    [match.match_id]
-  );
+  const { data: goals = [] } = useGoalSuspenseQuery(getMatchGoalsPrisma, [
+    match.match_id,
+  ]);
 
   const homeTeamKey = `${match.match_id}_${match.home_team_id}`;
   const awayTeamKey = `${match.match_id}_${match.away_team_id}`;
@@ -319,15 +318,16 @@ function TeamLineupsSectionInner({
                           >
                             {player.player_name}
                           </Link>
-                          <div className="flex gap-1 ml-2">
-                            {!!player.regular_goals && player.regular_goals > 0 && (
-                              <Badge
-                                variant="secondary"
-                                className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-800"
-                              >
-                                ⚽ {player.regular_goals}
-                              </Badge>
-                            )}
+                          <div className="flex ml-2">
+                            {!!player.regular_goals &&
+                              player.regular_goals > 0 && (
+                                <Badge
+                                  variant="secondary"
+                                  className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-800"
+                                >
+                                  ⚽ {player.regular_goals}
+                                </Badge>
+                              )}
                             {!!player.own_goals && player.own_goals > 0 && (
                               <Badge
                                 variant="secondary"
@@ -420,15 +420,16 @@ function TeamLineupsSectionInner({
                             >
                               {player.player_name}
                             </Link>
-                            <div className="flex gap-1 ml-2">
-                              {!!player.regular_goals && player.regular_goals > 0 && (
-                                <Badge
-                                  variant="secondary"
-                                  className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-800"
-                                >
-                                  ⚽ {player.regular_goals}
-                                </Badge>
-                              )}
+                            <div className="flex ml-2">
+                              {!!player.regular_goals &&
+                                player.regular_goals > 0 && (
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-800"
+                                  >
+                                    ⚽ {player.regular_goals}
+                                  </Badge>
+                                )}
                               {!!player.own_goals && player.own_goals > 0 && (
                                 <Badge
                                   variant="secondary"
@@ -594,15 +595,16 @@ function TeamLineupsSectionInner({
                           >
                             {player.player_name}
                           </Link>
-                          <div className="flex gap-1 ml-2">
-                            {!!player.regular_goals && player.regular_goals > 0 && (
-                              <Badge
-                                variant="secondary"
-                                className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-800"
-                              >
-                                ⚽ {player.regular_goals}
-                              </Badge>
-                            )}
+                          <div className="flex ml-2">
+                            {!!player.regular_goals &&
+                              player.regular_goals > 0 && (
+                                <Badge
+                                  variant="secondary"
+                                  className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-800"
+                                >
+                                  ⚽ {player.regular_goals}
+                                </Badge>
+                              )}
                             {!!player.own_goals && player.own_goals > 0 && (
                               <Badge
                                 variant="secondary"
@@ -695,15 +697,16 @@ function TeamLineupsSectionInner({
                             >
                               {player.player_name}
                             </Link>
-                            <div className="flex gap-1 ml-2">
-                              {!!player.regular_goals && player.regular_goals > 0 && (
-                                <Badge
-                                  variant="secondary"
-                                  className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-800"
-                                >
-                                  ⚽ {player.regular_goals}
-                                </Badge>
-                              )}
+                            <div className="flex ml-2">
+                              {!!player.regular_goals &&
+                                player.regular_goals > 0 && (
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-800"
+                                  >
+                                    ⚽ {player.regular_goals}
+                                  </Badge>
+                                )}
                               {!!player.own_goals && player.own_goals > 0 && (
                                 <Badge
                                   variant="secondary"
