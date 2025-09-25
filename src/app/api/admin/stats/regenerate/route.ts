@@ -39,10 +39,33 @@ export async function POST(request: NextRequest) {
           home_score: { not: null },
           away_score: { not: null },
         },
-        include: {
-          home_team: true,
-          away_team: true,
-          season: true,
+        select: {
+          match_id: true,
+          season_id: true,
+          home_team_id: true,
+          away_team_id: true,
+          home_score: true,
+          away_score: true,
+          penalty_home_score: true,
+          penalty_away_score: true,
+          home_team: {
+            select: {
+              team_id: true,
+              team_name: true,
+            },
+          },
+          away_team: {
+            select: {
+              team_id: true,
+              team_name: true,
+            },
+          },
+          season: {
+            select: {
+              season_id: true,
+              season_name: true,
+            },
+          },
         },
       });
 
@@ -63,7 +86,7 @@ export async function POST(request: NextRequest) {
         }
       >();
 
-      matches.forEach((match) => {
+      matches.forEach((match: typeof matches[0]) => {
         // season_id, home_team_id, away_team_id가 null인 경우 건너뛰기
         if (!match.season_id || !match.home_team_id || !match.away_team_id) {
           console.log(
@@ -134,10 +157,25 @@ export async function POST(request: NextRequest) {
           awayStats.points += 3;
           homeStats.losses++;
         } else {
-          homeStats.draws++;
-          awayStats.draws++;
-          homeStats.points += 1;
-          awayStats.points += 1;
+          // 정규시간 무승부 - 승부차기 확인
+          if (match.penalty_home_score !== null && match.penalty_away_score !== null) {
+            // 승부차기 결과로 승부 결정
+            if ((match.penalty_home_score || 0) > (match.penalty_away_score || 0)) {
+              homeStats.wins++;
+              homeStats.points += 3;
+              awayStats.losses++;
+            } else {
+              awayStats.wins++;
+              awayStats.points += 3;
+              homeStats.losses++;
+            }
+          } else {
+            // 진짜 무승부 (승부차기가 없는 경우)
+            homeStats.draws++;
+            awayStats.draws++;
+            homeStats.points += 1;
+            awayStats.points += 1;
+          }
         }
 
         // 골차 계산
@@ -244,7 +282,7 @@ export async function POST(request: NextRequest) {
         }
       >();
 
-      playerMatchStats.forEach((matchStat) => {
+      playerMatchStats.forEach((matchStat: typeof playerMatchStats[0]) => {
         // 완료된 경기만 처리
         if (matchStat.match?.status !== 'completed') {
           return;
@@ -373,7 +411,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      matches.forEach((match) => {
+      matches.forEach((match: typeof matches[0]) => {
         if (match.season_id && match.home_team_id && match.away_team_id) {
           teamSeasons.add(`${match.season_id}-${match.home_team_id}`);
           teamSeasons.add(`${match.season_id}-${match.away_team_id}`);
@@ -413,6 +451,15 @@ export async function POST(request: NextRequest) {
 
       const matches = await prisma.match.findMany({
         where: matchFilter,
+        select: {
+          match_id: true,
+          home_team_id: true,
+          away_team_id: true,
+          home_score: true,
+          away_score: true,
+          penalty_home_score: true,
+          penalty_away_score: true,
+        },
       });
 
       console.log(`${matches.length}개 경기로부터 H2H 통계 계산 중... ${seasonId && seasonId !== 'all' ? `(시즌 ID: ${seasonId})` : '(전체 시즌)'}`);
@@ -430,7 +477,7 @@ export async function POST(request: NextRequest) {
         }
       >();
 
-      matches.forEach((match) => {
+      matches.forEach((match: typeof matches[0]) => {
         // home_team_id, away_team_id가 null인 경우 건너뛰기
         if (!match.home_team_id || !match.away_team_id) {
           return;
@@ -472,7 +519,27 @@ export async function POST(request: NextRequest) {
         } else if (team1Score < team2Score) {
           stats.team2_wins++;
         } else {
-          stats.draws++;
+          // 정규시간 무승부 - 승부차기 확인
+          if (match.penalty_home_score !== null && match.penalty_away_score !== null) {
+            // 승부차기 결과로 승부 결정
+            let team1PenaltyScore, team2PenaltyScore;
+            if (match.home_team_id === team1) {
+              team1PenaltyScore = match.penalty_home_score || 0;
+              team2PenaltyScore = match.penalty_away_score || 0;
+            } else {
+              team1PenaltyScore = match.penalty_away_score || 0;
+              team2PenaltyScore = match.penalty_home_score || 0;
+            }
+
+            if (team1PenaltyScore > team2PenaltyScore) {
+              stats.team1_wins++;
+            } else {
+              stats.team2_wins++;
+            }
+          } else {
+            // 진짜 무승부 (승부차기가 없는 경우)
+            stats.draws++;
+          }
         }
       });
 
